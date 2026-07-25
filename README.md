@@ -394,6 +394,4 @@ Replace the author, URL, and version after publishing the repository:
 
 ## License
 
-This repository is intended to be released under the [MIT License](https://opensource.org/licenses/MIT).
-
-Keep the MIT badge and this section only after a compatible `LICENSE` file has been added to the repository root. Preserve all original copyright, license, and citation notices when incorporating third-party code.
+ [MIT License](https://opensource.org/licenses/MIT).

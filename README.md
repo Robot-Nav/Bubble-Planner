@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="./README_zh-CN.md"><strong>中文文档</strong></a>
+  <a href="./README_zh.md"><strong>中文文档</strong></a>
   ·
   <a href="#citation"><strong>Citation</strong></a>
   ·

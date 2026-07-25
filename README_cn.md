@@ -402,6 +402,5 @@ roslaunch bubble_planner_reproduction ego_sim_bridge.launch \
 
 ## 许可证
 
-本仓库计划采用 [MIT License](https://opensource.org/licenses/MIT) 发布。
+[MIT License](https://opensource.org/licenses/MIT) 
 
-仅当仓库根目录中已经添加兼容的 `LICENSE` 文件后，才应保留 MIT 徽章和本节内容。引入第三方代码时，必须保留原始版权声明、许可证文本和引用信息。

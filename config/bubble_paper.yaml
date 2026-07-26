@@ -1,4 +1,4 @@
-# Bubble Planner 论文模式：尽量保持论文的算法结构；单位默认使用 m、s、m/s。
+# Bubble Planner 论文模式：单位默认使用 m、s、m/s。
 frame_id: world                         # 规划结果坐标系；simple_run_lio.launch 会覆盖为 camera_init。
 cloud_topic: /map_generator/global_cloud # 障碍物 PointCloud2；LIO 模式会覆盖为 /octomap_point_cloud_centers。
 odom_topic: /odom_world                 # 无人机里程计；LIO 模式会覆盖为 /Odometry。

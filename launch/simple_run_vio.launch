@@ -1,11 +1,4 @@
 <launch>
-  <!-- Bubble Planner (论文复现版) —— VINS/Gazebo 仿真方案
-       与 ego-planner 的 simple_run_vio.launch 对应，二者择一启动。
-       输入: /mavros/local_position/odom + /pcl_render_node/cloud
-       目标: RViz 2D Nav Goal (/move_base_simple/goal)
-       输出: /planning/pos_cmd (经 bubble_planner_bridge 转换, 供 shaoyu_ctrl_v2 使用)
-
-       速度参数已对齐 shaoyu_ctrl_v2 的 max_vel = 1.0 m/s。 -->
 
   <!-- 规划器本体 -->
   <node pkg="bubble_planner"

@@ -1,13 +1,6 @@
 <launch>
   <arg name="use_rviz" default="true"/>
 
-  <!-- Bubble Planner (论文复现版) —— FAST_LIO 方案
-       与 ego-planner 的 simple_run_lio.launch 对应，二者择一启动。
-       输入: /Odometry + /cloud_registered (FAST_LIO)
-       目标: RViz 2D Nav Goal (/move_base_simple/goal)
-       输出: /planning/pos_cmd (经 bubble_planner_bridge 转换, 供 shaoyu_ctrl_v2 使用)
-
-       速度参数已对齐 shaoyu_ctrl_v2 的 max_vel = 1.0 m/s。 -->
 
   <!-- 规划器本体 -->
   <node pkg="bubble_planner"
@@ -49,7 +42,6 @@
     <param name="frame_id"   value="camera_init"/>
   </node>
 
-  <!-- FAST-LIO 模式专用 RViz：坐标系和点云话题与本 launch 一致。 -->
   <node if="$(arg use_rviz)"
         pkg="rviz"
         type="rviz"

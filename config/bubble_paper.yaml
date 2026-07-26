@@ -1,0 +1,91 @@
+# Bubble Planner 论文模式：尽量保持论文的算法结构；单位默认使用 m、s、m/s。
+frame_id: world                         # 规划结果坐标系；simple_run_lio.launch 会覆盖为 camera_init。
+cloud_topic: /map_generator/global_cloud # 障碍物 PointCloud2；LIO 模式会覆盖为 /octomap_point_cloud_centers。
+odom_topic: /odom_world                 # 无人机里程计；LIO 模式会覆盖为 /Odometry。
+goal_topic: /move_base_simple/goal      # RViz“2D Nav Goal”发布的目标话题。
+risk_topic: /trajectory_risk_level      # 外部风险等级；非 0 时强制触发重规划。
+replan_rate: 20.0                       # 重规划条件检查频率，单位 Hz。
+command_rate: 100.0                     # 轨迹参考位置/速度/加速度发布频率，单位 Hz。
+goal_tolerance: 0.25                    # 判定到达目标的位置误差阈值，单位 m。
+goal_velocity_tolerance: 0.25           # 判定稳定到达时允许的最大速度，单位 m/s。
+
+goal_adjustment:                        # 点击位置过近时，自动搜索附近可再次规划的安全终点。
+  enabled: true                         # true=自动平移危险终点；false=保留原目标并由规划器报错。
+  clearance_margin: 0.0                 # 在“机体+安全裕量+min_radius”之外再附加的终点净距，单位 m。
+  max_distance: 2.0                     # 最多在点击点周围搜索多远；找不到则拒绝该目标，单位 m。
+  search_step: 0.10                     # 安全终点径向搜索步长；越小越精细但检查次数越多，单位 m。
+
+planning_horizon: 15.0                  # 单次局部规划最远距离，单位 m；LIO launch 当前覆盖为 10 m。
+distance_trigger_ratio: 0.4             # 位移达到 planning_horizon×该比例时触发滚动重规划。
+collision_check_horizon: 2.0            # 每次检查当前轨迹未来多长时间内是否碰撞，单位 s。
+collision_check_dt: 0.05                # 在线碰撞检查的时间采样间隔，单位 s；越小越严密但更耗时。
+commit_time: 0.12                       # 新轨迹生成后仍承诺执行旧轨迹的时间，避免控制指令跳变，单位 s。
+
+astar:                                  # 三维 26 邻域 A* 引导路径参数。
+  resolution: 0.25                      # A* 栅格边长，单位 m；越小路径更细但搜索节点显著增多。
+  clearance: 0.15                       # A* 栅格点距障碍的最小净距，单位 m；不等同于最终轨迹机体净距。
+  search_margin: 3.0                    # 起终点包围盒向各方向扩大的绕障搜索余量，单位 m。
+  min_z: 0.20                           # A* 允许的最低飞行高度，单位 m。
+  max_z: 5.0                            # A* 允许的最高飞行高度，单位 m。
+  proximity_weight: 0.0                 # 靠近障碍的附加代价权重；论文模式设 0，不主动偏向通道中央。
+  max_expanded_nodes: 160000            # 单次 A* 最多扩展节点数，防止无解地图中搜索失控。
+  simplify_path: true                   # true=用直线可视性删除冗余 A* 拐点，减少后端走廊段数。
+
+corridor:                               # 重叠球形安全走廊生成参数。
+  paper_mode: true                      # true=论文结构模式，会关闭增强版推进评分和自适应协方差。
+  random_seed: 7                        # 高斯采样随机种子；固定后便于重复同一组实验。
+  batch_size: 96                        # 每轮高斯采样候选球数量；增大可提高成功率但增加计算量。
+  max_spheres: 64                       # 一条局部走廊允许的最大球数量，防止无限扩展。
+  max_failed_batches: 10                # 连续多少轮没有合格球后判定走廊生成失败。
+  drone_radius: 0.30                    # 无人机等效包络球半径，单位 m，不是 Bubble 球半径。
+  safety_margin: 0.15                   # 机体半径外附加的碰撞安全裕量，单位 m。
+  min_radius: 0.20                      # Bubble 最小半径，单位 m；是“机体+安全裕量”外额外所需空间。
+                                           # 公式：Bubble半径=最近障碍距离-drone_radius-safety_margin。
+                                           # 因此当前正常球要求球心距障碍至少 0.30+0.15+0.20=0.65 m。
+  max_radius: 4.0                       # Bubble 最大半径，单位 m，避免开阔区产生过大的走廊球。
+  overlap_depth: 0.10                   # 相邻球沿球心连线至少互相深入多少，单位 m，避免仅仅相切。
+                                           # 判断式：球心距 <= r1+r2-overlap_depth；调小更容易连接但过渡更薄。
+                                           # 若改为 0.05，允许更浅的交叠，狭窄区成功率通常更高。
+  min_overlap_volume: 0.005             # 相邻两个球的最小真实交叠体积，单位 m³。
+                                           # 调小更容易接受细小交集，但给轨迹优化器的可行过渡区域更小。
+                                           # 若改为 0.002 m³，会比当前 0.005 m³ 更宽松。
+  guide_inside_margin: 0.05             # 引导点需走出“当前球半径+此余量”，单位 m，防止原地采样。
+  min_forward_progress: 0.25            # 候选球心沿 A* 前进方向至少推进的距离，单位 m。
+                                           # 代码计算 dot(candidate-previous, guide_direction)；不足则丢弃。
+                                           # 若改为 0.10，转弯/窄通道更易成功，但可能增加小步球和球数量。
+  nominal_speed: 4.0                    # 按路径长度初始化每段时间时使用的期望速度，单位 m/s。
+                                           # simple_run_lio.launch 为控制稳定会覆盖为 1.0 m/s。
+  min_piece_time: 0.12                  # 每段 MINCO 轨迹的最短初始时间，单位 s。
+  rho_sphere_volume: 1.0                # 候选评分中的球体积权重；越大越偏好宽阔区域的大球。
+  rho_overlap_volume: 2.0               # 候选评分中的交叠体积权重；越大越偏好连接更稳的球。
+  rho_progress: 0.0                     # 候选评分中的前进距离权重；论文模式固定关闭。
+  rho_guide_cost: 0.0                   # 偏离 A* 引导点的惩罚权重；论文模式固定关闭。
+  adaptive_covariance: false            # 是否按环境开阔度动态调整高斯协方差；论文模式关闭。
+  longitudinal_sigma_scale: 0.50        # 沿引导方向标准差=引导距离×该比例。
+  lateral_sigma_ratio: 0.50             # 横向/竖向标准差=纵向标准差×该比例。
+
+rhc:                                    # Receding Horizon Corridors 旧走廊复用参数。
+  enabled: true                         # true=重规划时尝试保留仍然安全的旧 Bubble。
+  reuse_distance: 3.0                   # 只考虑距当前起点该范围内的旧球，单位 m。
+  max_reused_spheres: 6                 # 每次重规划最多复用的旧球数量。
+  radius_revalidation_margin: 0.02      # 复查旧球时额外收缩的半径裕量，单位 m。
+
+minco:                                  # 七阶 MINCO 连续轨迹优化参数。
+  max_velocity: 6.0                     # 轨迹速度软约束上限，单位 m/s；LIO launch 覆盖为 1.0。
+  max_acceleration: 8.0                 # 轨迹加速度软约束上限，单位 m/s²；LIO launch 覆盖为 2.0。
+  max_jerk: 1000.0                      # jerk 上限，单位 m/s³；论文模式 weight_jerk=0，基本不启用。
+  nominal_speed: 4.0                    # MINCO 分段时间初始化期望速度，单位 m/s；LIO launch 覆盖为 1.0。
+  min_piece_time: 0.12                  # 优化后每段轨迹允许的最短持续时间，单位 s。
+  weight_time: 20.0                     # 总飞行时间代价权重；越大越追求快速轨迹。
+  weight_corridor: 8000.0               # 轨迹离开球形走廊时的惩罚权重；过低可能产生不安全轨迹。
+  weight_velocity: 2000.0               # 超过 max_velocity 时的软约束惩罚权重。
+  weight_acceleration: 2000.0           # 超过 max_acceleration 时的软约束惩罚权重。
+  weight_jerk: 0.0                      # 超过 max_jerk 时的惩罚权重；论文模式设 0 表示关闭额外 jerk 约束。
+  weight_waypoint: 5000.0               # 中间点偏离相邻球交集可行区域时的惩罚权重。
+  smoothing_mu: 0.02                    # 软约束平滑屏障宽度；越小越接近硬折线但梯度更尖锐。
+  quadrature_intervals: 8               # 每段轨迹计算积分代价使用的数值积分小区间数。
+  validation_samples_per_piece: 50      # 优化完成后每段独立碰撞/动力学复核的采样数量。
+  max_iterations: 50                    # L-BFGS 单次优化最大迭代次数。
+  lbfgs_memory: 12                      # L-BFGS 保存的历史向量数量；影响内存和曲率近似。
+  relative_cost_tolerance: 1.0e-5       # 相对代价变化低于此值时允许认为优化收敛。
+  gradient_epsilon: 1.0e-5              # 梯度范数/数值稳定相关阈值，用于优化停止与保护。

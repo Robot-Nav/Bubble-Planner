@@ -238,22 +238,22 @@ $$
 ## 仓库结构
 
 ```text
-bubble_planner_reproduction/
+Bubble-Planner/
 ├── CMakeLists.txt
 ├── package.xml
 ├── README.md
-├── README_zh-CN.md
+├── README_cn.md
 ├── LICENSE
 ├── config/
 │   ├── bubble_paper.yaml
 │   └── bubble_enhanced.yaml
-├── launch/
-│   ├── demo_sim.launch
-│   └── ego_sim_bridge.launch
-├── include/
+├── include/bubble_planner/
 ├── src/
+├── launch/
+├── rviz/
 ├── scripts/
-└── docs/
+├── tests/
+└── third_party/GCOPTER/
 ```
 
 ---
@@ -306,8 +306,8 @@ bubble_planner_reproduction/
 ```bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/<REPOSITORY_NAME>.git
-cd <REPOSITORY_NAME>
+git clone https://github.com/Robot-Nav/Bubble-Planner.git
+cd Bubble-Planner
 
 ./scripts/setup_dependencies.sh
 
@@ -320,19 +320,17 @@ source devel/setup.bash
 运行独立仿真：
 
 ```bash
-roslaunch bubble_planner_reproduction demo_sim.launch
+roslaunch bubble_planner demo_sim.launch
 ```
 
 连接到 EGO-Planner 仿真环境：
 
 ```bash
-roslaunch bubble_planner_reproduction ego_sim_bridge.launch \
+roslaunch bubble_planner ego_sim_bridge.launch \
   cloud_topic:=/map_generator/global_cloud \
   odom_topic:=/odom_world \
   frame_id:=world
 ```
-
-发布仓库前，请将命令中的占位符替换为真实的 GitHub 用户名和仓库名称。
 
 ---
 
@@ -376,8 +374,6 @@ roslaunch bubble_planner_reproduction ego_sim_bridge.launch \
 ```
 
 ### 本仓库
-
-仓库正式发布后，请根据实际信息修改作者、URL 和版本号：
 
 ```bibtex
 @software{bubble_planner_reproduction_enhancement_2026,

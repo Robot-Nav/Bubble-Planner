@@ -1,0 +1,17 @@
+<!--
+  在已经启动 EGO-Planner 仿真环境后，只启动本规划器。
+  根据你的仿真话题修改 cloud_topic 和 odom_topic。
+-->
+<launch>
+  <arg name="config_file" default="$(find bubble_planner)/config/bubble_enhanced.yaml"/>
+  <arg name="cloud_topic" default="/map_generator/global_cloud"/>
+  <arg name="odom_topic" default="/odom_world"/>
+  <arg name="frame_id" default="world"/>
+
+  <include file="$(find bubble_planner)/launch/bubble_planner.launch">
+    <arg name="config_file" value="$(arg config_file)"/>
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+    <arg name="odom_topic" value="$(arg odom_topic)"/>
+    <arg name="frame_id" value="$(arg frame_id)"/>
+  </include>
+</launch>

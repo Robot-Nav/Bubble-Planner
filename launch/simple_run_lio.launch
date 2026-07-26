@@ -1,0 +1,58 @@
+<launch>
+  <arg name="use_rviz" default="true"/>
+
+  <!-- Bubble Planner (论文复现版) —— FAST_LIO 方案
+       与 ego-planner 的 simple_run_lio.launch 对应，二者择一启动。
+       输入: /Odometry + /cloud_registered (FAST_LIO)
+       目标: RViz 2D Nav Goal (/move_base_simple/goal)
+       输出: /planning/pos_cmd (经 bubble_planner_bridge 转换, 供 shaoyu_ctrl_v2 使用)
+
+       速度参数已对齐 shaoyu_ctrl_v2 的 max_vel = 1.0 m/s。 -->
+
+  <!-- 规划器本体 -->
+  <node pkg="bubble_planner"
+        type="bubble_planner_node"
+        name="bubble_planner"
+        output="screen">
+    <rosparam command="load" file="$(find bubble_planner)/config/bubble_paper.yaml"/>
+
+    <!-- octomap 滤波点云（需先启动 octomap_server，与 ego 一致） -->
+    <param name="cloud_topic" value="/octomap_point_cloud_centers"/>
+    <param name="odom_topic"  value="/Odometry"/>
+    <param name="goal_topic"  value="/move_base_simple/goal"/>
+    <param name="frame_id"    value="camera_init"/>
+    <param name="override_goal_z" value="true"/>
+    <param name="goal_z"      value="1.0"/>
+
+    <!-- 速度/加速度对齐 shaoyu_ctrl_v2 (max_vel = 1.0) -->
+    <param name="minco/max_velocity"     value="1.0"/>
+    <param name="minco/max_acceleration" value="2.0"/>
+    <param name="minco/nominal_speed"   value="1.0"/>
+    <param name="corridor/nominal_speed" value="1.0"/>
+
+    <!-- A* 稳健性：缩小搜索盒、放宽分辨率、增大绕行余量、提高扩展上限 -->
+    <param name="planning_horizon"          value="10.0"/>
+    <param name="astar/resolution"          value="0.35"/>
+    <param name="astar/search_margin"       value="4.0"/>
+    <param name="astar/max_expanded_nodes"  value="500000"/>
+  </node>
+
+  <!-- 参考->PositionCommand 桥接 -->
+  <node pkg="bubble_planner_bridge"
+        type="bubble_planner_bridge"
+        name="bubble_planner_bridge"
+        output="screen">
+    <param name="pose_topic" value="/bubble_planner/reference/pose"/>
+    <param name="vel_topic"  value="/bubble_planner/reference/velocity"/>
+    <param name="acc_topic"  value="/bubble_planner/reference/acceleration"/>
+    <param name="out_topic"  value="/planning/pos_cmd"/>
+    <param name="frame_id"   value="camera_init"/>
+  </node>
+
+  <!-- FAST-LIO 模式专用 RViz：坐标系和点云话题与本 launch 一致。 -->
+  <node if="$(arg use_rviz)"
+        pkg="rviz"
+        type="rviz"
+        name="bubble_planner_rviz"
+        args="-d $(find bubble_planner)/rviz/bubble_planner_lio.rviz"/>
+</launch>

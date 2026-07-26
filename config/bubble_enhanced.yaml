@@ -1,0 +1,82 @@
+# 项目报告增强模式：在 Bubble Planner 基础上加入风险触发、推进评分、
+# 自适应采样协方差、jerk 约束和承诺段切换。
+frame_id: world
+cloud_topic: /map_generator/global_cloud
+odom_topic: /odom_world
+goal_topic: /move_base_simple/goal
+risk_topic: /trajectory_risk_level
+replan_rate: 20.0
+command_rate: 100.0
+goal_tolerance: 0.25
+goal_velocity_tolerance: 0.25
+goal_adjustment:
+  enabled: true
+  clearance_margin: 0.0
+  max_distance: 2.0
+  search_step: 0.10
+
+planning_horizon: 10.0
+distance_trigger_ratio: 0.35
+collision_check_horizon: 2.5
+collision_check_dt: 0.04
+commit_time: 0.15
+
+astar:
+  resolution: 0.22
+  clearance: 0.15
+  search_margin: 3.0
+  min_z: 0.20
+  max_z: 5.0
+  proximity_weight: 0.08
+  max_expanded_nodes: 180000
+  simplify_path: true
+
+corridor:
+  paper_mode: false
+  random_seed: 7
+  batch_size: 96
+  max_spheres: 64
+  max_failed_batches: 10
+  drone_radius: 0.30
+  safety_margin: 0.18
+  min_radius: 0.20
+  max_radius: 4.0
+  overlap_depth: 0.16
+  min_overlap_volume: 0.015
+  guide_inside_margin: 0.05
+  min_forward_progress: 0.25
+  nominal_speed: 4.0
+  min_piece_time: 0.14
+  rho_sphere_volume: 1.0
+  rho_overlap_volume: 2.2
+  rho_progress: 0.8
+  rho_guide_cost: 0.15
+  adaptive_covariance: true
+  longitudinal_sigma_scale: 0.50
+  lateral_sigma_ratio: 0.55
+
+rhc:
+  enabled: true
+  reuse_distance: 3.0
+  max_reused_spheres: 6
+  radius_revalidation_margin: 0.04
+
+minco:
+  max_velocity: 6.0
+  max_acceleration: 8.0
+  max_jerk: 25.0
+  nominal_speed: 4.0
+  min_piece_time: 0.14
+  weight_time: 18.0
+  weight_corridor: 10000.0
+  weight_velocity: 2500.0
+  weight_acceleration: 2500.0
+  weight_jerk: 80.0
+  weight_waypoint: 6000.0
+  smoothing_mu: 0.02
+  quadrature_intervals: 10
+  validation_samples_per_piece: 60
+  max_iterations: 60
+  lbfgs_memory: 16
+  relative_cost_tolerance: 1.0e-5
+  gradient_epsilon: 1.0e-5

@@ -1,0 +1,43 @@
+<launch>
+  <!-- Bubble Planner (论文复现版) —— VINS/Gazebo 仿真方案
+       与 ego-planner 的 simple_run_vio.launch 对应，二者择一启动。
+       输入: /mavros/local_position/odom + /pcl_render_node/cloud
+       目标: RViz 2D Nav Goal (/move_base_simple/goal)
+       输出: /planning/pos_cmd (经 bubble_planner_bridge 转换, 供 shaoyu_ctrl_v2 使用)
+
+       速度参数已对齐 shaoyu_ctrl_v2 的 max_vel = 1.0 m/s。 -->
+
+  <!-- 规划器本体 -->
+  <node pkg="bubble_planner"
+        type="bubble_planner_node"
+        name="bubble_planner"
+        output="screen">
+    <rosparam command="load" file="$(find bubble_planner)/config/bubble_paper.yaml"/>
+
+    <!-- VINS / mavros 话题 -->
+    <param name="cloud_topic" value="/pcl_render_node/cloud"/>
+    <param name="odom_topic"  value="/mavros/local_position/odom"/>
+    <param name="goal_topic"  value="/move_base_simple/goal"/>
+    <param name="frame_id"    value="world"/>
+    <param name="override_goal_z" value="true"/>
+    <param name="goal_z"      value="1.0"/>
+
+    <!-- 速度/加速度对齐 shaoyu_ctrl_v2 (max_vel = 1.0) -->
+    <param name="minco/max_velocity"     value="1.0"/>
+    <param name="minco/max_acceleration" value="2.0"/>
+    <param name="minco/nominal_speed"   value="1.0"/>
+    <param name="corridor/nominal_speed" value="1.0"/>
+  </node>
+
+  <!-- 参考->PositionCommand 桥接 -->
+  <node pkg="bubble_planner_bridge"
+        type="bubble_planner_bridge"
+        name="bubble_planner_bridge"
+        output="screen">
+    <param name="pose_topic" value="/bubble_planner/reference/pose"/>
+    <param name="vel_topic"  value="/bubble_planner/reference/velocity"/>
+    <param name="acc_topic"  value="/bubble_planner/reference/acceleration"/>
+    <param name="out_topic"  value="/planning/pos_cmd"/>
+    <param name="frame_id"   value="world"/>
+  </node>
+</launch>

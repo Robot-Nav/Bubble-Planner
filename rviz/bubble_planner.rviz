@@ -1,0 +1,61 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Tool Properties
+    Name: Tool Properties
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+      Plane: XY
+      Cell Size: 1
+    - Class: rviz/PointCloud2
+      Name: Obstacles
+      Enabled: true
+      Topic: /map_generator/global_cloud
+      Size (m): 0.04
+      Style: Points
+    - Class: rviz/Path
+      Name: AStar Guide
+      Enabled: true
+      Topic: /bubble_planner/guide_path
+      Line Style: Lines
+      Line Width: 0.04
+      Color: 255; 255; 0
+    - Class: rviz/Path
+      Name: MINCO Trajectory
+      Enabled: true
+      Topic: /bubble_planner/trajectory_path
+      Line Style: Lines
+      Line Width: 0.06
+      Color: 255; 64; 64
+    - Class: rviz/MarkerArray
+      Name: Bubble Corridor
+      Enabled: true
+      Marker Topic: /bubble_planner/corridor
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/SetInitialPose
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 20
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 1.5
+      Pitch: 0.55
+      Yaw: 0.78
+Window Geometry:
+  Width: 1280
+  Height: 800

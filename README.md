@@ -230,22 +230,22 @@ L-BFGS and analytic gradient propagation are used for spatial-temporal optimizat
 ## Repository Structure
 
 ```text
-bubble_planner_reproduction/
+Bubble-Planner/
 ├── CMakeLists.txt
 ├── package.xml
 ├── README.md
-├── README_zh-CN.md
+├── README_cn.md
 ├── LICENSE
 ├── config/
 │   ├── bubble_paper.yaml
 │   └── bubble_enhanced.yaml
-├── launch/
-│   ├── demo_sim.launch
-│   └── ego_sim_bridge.launch
-├── include/
+├── include/bubble_planner/
 ├── src/
+├── launch/
+├── rviz/
 ├── scripts/
-└── docs/
+├── tests/
+└── third_party/GCOPTER/
 ```
 
 ---
@@ -298,8 +298,8 @@ Configuration: `config/bubble_enhanced.yaml`
 ```bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/<REPOSITORY_NAME>.git
-cd <REPOSITORY_NAME>
+git clone https://github.com/Robot-Nav/Bubble-Planner.git
+cd Bubble-Planner
 
 ./scripts/setup_dependencies.sh
 
@@ -312,19 +312,17 @@ source devel/setup.bash
 Run the standalone simulation:
 
 ```bash
-roslaunch bubble_planner_reproduction demo_sim.launch
+roslaunch bubble_planner demo_sim.launch
 ```
 
 Connect to an EGO-Planner simulation environment:
 
 ```bash
-roslaunch bubble_planner_reproduction ego_sim_bridge.launch \
+roslaunch bubble_planner ego_sim_bridge.launch \
   cloud_topic:=/map_generator/global_cloud \
   odom_topic:=/odom_world \
   frame_id:=world
 ```
-
-Replace the placeholders with the actual repository information.
 
 ---
 
@@ -368,8 +366,6 @@ Missing obstacle points do not imply known free space. Previous trajectories mus
 ```
 
 ### This Repository
-
-Replace the author, URL, and version after publishing the repository:
 
 ```bibtex
 @software{bubble_planner_reproduction_enhancement_2026,

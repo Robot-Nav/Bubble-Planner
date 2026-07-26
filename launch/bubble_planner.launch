@@ -1,0 +1,38 @@
+<launch>
+  <arg name="config_file" default="$(find bubble_planner)/config/bubble_paper.yaml"/>
+  <arg name="cloud_topic" default="/map_generator/global_cloud"/>
+  <arg name="odom_topic" default="/odom_world"/>
+  <arg name="goal_topic" default="/move_base_simple/goal"/>
+  <arg name="risk_topic" default="/trajectory_risk_level"/>
+  <arg name="frame_id" default="world"/>
+  <arg name="use_rviz" default="true"/>
+  <arg name="override_goal_z" default="false"/>
+  <arg name="goal_z" default="1.5"/>
+  <arg name="max_velocity" default="6.0"/>
+  <arg name="max_acceleration" default="8.0"/>
+  <arg name="nominal_speed" default="4.0"/>
+
+  <node pkg="bubble_planner"
+        type="bubble_planner_node"
+        name="bubble_planner"
+        output="screen">
+    <rosparam command="load" file="$(arg config_file)"/>
+    <param name="cloud_topic" value="$(arg cloud_topic)"/>
+    <param name="odom_topic" value="$(arg odom_topic)"/>
+    <param name="goal_topic" value="$(arg goal_topic)"/>
+    <param name="risk_topic" value="$(arg risk_topic)"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="override_goal_z" value="$(arg override_goal_z)"/>
+    <param name="goal_z" value="$(arg goal_z)"/>
+    <param name="minco/max_velocity" value="$(arg max_velocity)"/>
+    <param name="minco/max_acceleration" value="$(arg max_acceleration)"/>
+    <param name="minco/nominal_speed" value="$(arg nominal_speed)"/>
+    <param name="corridor/nominal_speed" value="$(arg nominal_speed)"/>
+  </node>
+
+  <node if="$(arg use_rviz)"
+        pkg="rviz"
+        type="rviz"
+        name="bubble_planner_rviz"
+        args="-d $(find bubble_planner)/rviz/bubble_planner.rviz"/>
+</launch>

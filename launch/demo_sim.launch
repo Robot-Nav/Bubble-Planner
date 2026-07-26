@@ -1,0 +1,23 @@
+<launch>
+  <arg name="config_file" default="$(find bubble_planner)/config/bubble_paper.yaml"/>
+  <arg name="use_rviz" default="true"/>
+  <arg name="max_velocity" default="1.0"/>
+  <arg name="max_acceleration" default="2.0"/>
+  <arg name="nominal_speed" default="1.0"/>
+  <node pkg="bubble_planner"
+        type="demo_world.py"
+        name="bubble_demo_world"
+        output="screen"/>
+  <include file="$(find bubble_planner)/launch/bubble_planner.launch">
+    <arg name="config_file" value="$(arg config_file)"/>
+    <arg name="cloud_topic" value="/map_generator/global_cloud"/>
+    <arg name="odom_topic" value="/odom_world"/>
+    <arg name="frame_id" value="world"/>
+    <arg name="override_goal_z" value="true"/>
+    <arg name="goal_z" value="1.5"/>
+    <arg name="use_rviz" value="$(arg use_rviz)"/>
+    <arg name="max_velocity" value="$(arg max_velocity)"/>
+    <arg name="max_acceleration" value="$(arg max_acceleration)"/>
+    <arg name="nominal_speed" value="$(arg nominal_speed)"/>
+  </include>
+</launch>

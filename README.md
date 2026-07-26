@@ -28,6 +28,20 @@
   <img src="https://img.shields.io/badge/Status-Research%20Prototype-yellow" alt="Research Prototype">
 </p>
 
+
+---
+
+display:
+
+<img width="1733" height="590" alt="3068a3d1-8c3d-4704-afda-2dd9bb665db3" src="https://github.com/user-attachments/assets/315b69ae-c613-44de-a940-d369a186356f" />
+
+
+<img width="896" height="319" alt="5318d133-c2d8-4f41-88e2-798d64d11cca" src="https://github.com/user-attachments/assets/8d78c8f3-d75c-459f-a8af-6b0382bdada3" />
+
+
+
+
+
 ---
 
 ## Overview

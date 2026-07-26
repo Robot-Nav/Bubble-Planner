@@ -73,7 +73,7 @@ This repository is an **unofficial reproduction and extension** of:
 > DOI: [10.1109/IROS47612.2022.9981518](https://doi.org/10.1109/IROS47612.2022.9981518)  
 > Paper: [https://zhepeiwang.github.io/pubs/sub_2022_bubble.pdf](https://zhepeiwang.github.io/pubs/sub_2022_bubble.pdf)
 
-This is not official source code released by the original authors, and it is not endorsed or certified by them. The original A*-guided sampling, spherical corridor, RHC, and MINCO mechanisms must not be presented as contributions of this repository.
+This is not official source code released by the original authors, and it is not endorsed or certified by them. 
 
 ---
 
